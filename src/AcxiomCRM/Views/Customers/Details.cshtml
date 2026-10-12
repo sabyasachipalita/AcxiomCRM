@@ -1,0 +1,215 @@
+@model AcxiomCRM.ViewModels.CustomerDetailsViewModel
+@{
+    ViewData["Title"] = $"{Model.Customer.CustomerName} - Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h2 class="fw-bold mb-0">@Model.Customer.CustomerName</h2>
+            <span class="badge bg-light text-dark border">@Model.Customer.CustomerCode</span>
+            <span class="badge @(Model.Customer.Status == "Active" ? "bg-success" : "bg-secondary")">@Model.Customer.Status</span>
+        </div>
+        <p class="text-muted mb-0">Created on @Model.Customer.CreatedDate.ToString("MMMM dd, yyyy") by @Model.Customer.CreatedBy</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.Customer.CustomerId" class="btn btn-outline-primary">
+            <i class="bi bi-pencil me-1"></i> Edit Profile
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Customer Profile Card -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-bold">Customer Overview</div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span class="text-muted">Company:</span>
+                        <span class="fw-semibold">@(string.IsNullOrEmpty(Model.Customer.CompanyName) ? "—" : Model.Customer.CompanyName)</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span class="text-muted">Email:</span>
+                        <span class="fw-semibold"><a href="mailto:@Model.Customer.Email" class="text-decoration-none">@Model.Customer.Email</a></span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span class="text-muted">Phone:</span>
+                        <span class="fw-semibold"><a href="tel:@Model.Customer.Phone" class="text-decoration-none">@Model.Customer.Phone</a></span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span class="text-muted">City / State:</span>
+                        <span class="fw-semibold">@(string.IsNullOrEmpty(Model.Customer.City) ? "—" : $"{Model.Customer.City}, {Model.Customer.State}")</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span class="text-muted">Assigned Owner:</span>
+                        <span class="badge bg-primary">@(Model.Customer.Owner?.FullName ?? "Unassigned")</span>
+                    </li>
+                    <li class="list-group-item px-0">
+                        <span class="text-muted d-block mb-1">Address:</span>
+                        <span class="small">@(string.IsNullOrEmpty(Model.Customer.Address) ? "None specified" : Model.Customer.Address)</span>
+                    </li>
+                    @if (!string.IsNullOrEmpty(Model.Customer.Notes))
+                    {
+                        <li class="list-group-item px-0">
+                            <span class="text-muted d-block mb-1">Notes:</span>
+                            <span class="small fst-italic">@Model.Customer.Notes</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <!-- Quick Action Shortcuts -->
+        <div class="card shadow-sm">
+            <div class="card-header fw-bold">Quick Actions</div>
+            <div class="card-body d-grid gap-2">
+                <a asp-controller="Opportunities" asp-action="Create" asp-route-customerId="@Model.Customer.CustomerId" class="btn btn-outline-primary btn-sm text-start">
+                    <i class="bi bi-graph-up me-2"></i> Add Sales Opportunity
+                </a>
+                <a asp-controller="FollowUps" asp-action="Create" asp-route-customerId="@Model.Customer.CustomerId" class="btn btn-outline-warning text-dark btn-sm text-start">
+                    <i class="bi bi-calendar-plus me-2"></i> Schedule Follow-Up
+                </a>
+                <a asp-controller="Activities" asp-action="Create" asp-route-customerId="@Model.Customer.CustomerId" class="btn btn-outline-info text-dark btn-sm text-start">
+                    <i class="bi bi-telephone-plus me-2"></i> Log Activity / Call
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side Tabs: Opportunities, Follow-Ups, Activities -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header p-0 border-bottom">
+                <ul class="nav nav-tabs card-header-tabs m-0 px-3" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active py-3" data-bs-toggle="tab" data-bs-target="#tab-opportunities" type="button">
+                            <i class="bi bi-graph-up me-1"></i> Opportunities (@Model.Opportunities.Count)
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link py-3" data-bs-toggle="tab" data-bs-target="#tab-followups" type="button">
+                            <i class="bi bi-calendar-check me-1"></i> Follow-Ups (@Model.FollowUps.Count)
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link py-3" data-bs-toggle="tab" data-bs-target="#tab-activities" type="button">
+                            <i class="bi bi-clock-history me-1"></i> Activities (@Model.Activities.Count)
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body tab-content p-4">
+                <!-- Tab 1: Opportunities -->
+                <div class="tab-pane fade show active" id="tab-opportunities">
+                    @if (Model.Opportunities.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Opportunity</th>
+                                        <th>Amount</th>
+                                        <th>Stage</th>
+                                        <th>Probability</th>
+                                        <th>Close Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var opp in Model.Opportunities)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a asp-controller="Opportunities" asp-action="Details" asp-route-id="@opp.OpportunityId" class="fw-semibold text-decoration-none">
+                                                    @opp.OpportunityName
+                                                </a>
+                                            </td>
+                                            <td class="fw-bold text-success">$@opp.Amount.ToString("N0")</td>
+                                            <td><span class="badge bg-light text-dark border">@opp.Stage</span></td>
+                                            <td>@opp.Probability%</td>
+                                            <td><small>@opp.ExpectedCloseDate.ToString("yyyy-MM-dd")</small></td>
+                                            <td>
+                                                <span class="badge @(opp.Status == "Won" ? "bg-success" : opp.Status == "Lost" ? "bg-danger" : "bg-primary")">
+                                                    @opp.Status
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-4 mb-0">No opportunities recorded for this customer yet.</p>
+                    }
+                </div>
+
+                <!-- Tab 2: FollowUps -->
+                <div class="tab-pane fade" id="tab-followups">
+                    @if (Model.FollowUps.Any())
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var f in Model.FollowUps)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                    <div>
+                                        <div class="fw-bold">@f.Subject</div>
+                                        <div class="small text-muted">
+                                            <i class="bi bi-calendar me-1"></i> @f.FollowUpDate.ToString("MMM dd, yyyy HH:mm") |
+                                            <span class="badge bg-secondary">@f.FollowUpType</span>
+                                            @if (!string.IsNullOrEmpty(f.Remarks))
+                                            {
+                                                <span class="ms-2 fst-italic">"@f.Remarks"</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <span class="badge @(f.Status == "Completed" ? "bg-success" : f.Status == "Planned" ? "bg-primary" : "bg-danger")">
+                                        @f.Status
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-4 mb-0">No follow-ups recorded yet.</p>
+                    }
+                </div>
+
+                <!-- Tab 3: Activities -->
+                <div class="tab-pane fade" id="tab-activities">
+                    @if (Model.Activities.Any())
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var a in Model.Activities)
+                            {
+                                <li class="list-group-item py-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div class="fw-bold">
+                                            <span class="badge bg-dark me-2">@a.ActivityType</span> @a.Subject
+                                        </div>
+                                        <small class="text-muted">@a.ActivityDate.ToString("MMM dd, yyyy HH:mm")</small>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(a.Description))
+                                    {
+                                        <p class="small text-muted mb-0">@a.Description</p>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-4 mb-0">No activities recorded yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,14 @@
+## Visual Studio & .NET Core
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.db-shm
+*.db-wal
+acxiomcrm.db
+.vs/
+.vscode/
+TestResults/
+*.log

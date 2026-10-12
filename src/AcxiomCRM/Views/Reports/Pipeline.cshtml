@@ -1,0 +1,109 @@
+@model AcxiomCRM.ViewModels.PipelineReportViewModel
+@{
+    ViewData["Title"] = "Sales Pipeline Report";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-bar-chart-steps text-primary me-2"></i> Pipeline Analysis Report</h2>
+        <p class="text-muted mb-0">Stage distribution, owner workloads, and probability-weighted pipeline values</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="ExportOpportunitiesCsv" class="btn btn-outline-success">
+            <i class="bi bi-download me-1"></i> Export Opportunities CSV
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Reports
+        </a>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card bg-primary text-white shadow-sm p-4">
+            <div class="text-uppercase small text-white-50 fw-bold">Grand Total Pipeline Value</div>
+            <div class="display-6 fw-bold mt-1">$@Model.GrandTotalAmount.ToString("N0")</div>
+            <small class="text-white-50">Combined amount across all stages</small>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-dark text-white shadow-sm p-4">
+            <div class="text-uppercase small text-white-50 fw-bold">Probability-Weighted Revenue Expectation</div>
+            <div class="display-6 fw-bold text-warning mt-1">$@Model.GrandWeightedAmount.ToString("N0")</div>
+            <small class="text-white-50">Weighted sum of (Amount × Probability / 100)</small>
+        </div>
+    </div>
+</div>
+
+<!-- Section 1: Stage Distribution -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold">Stage-Wise Pipeline Breakdown</div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Pipeline Stage</th>
+                        <th>Opportunities</th>
+                        <th>Total Value ($)</th>
+                        <th>Weighted Value ($)</th>
+                        <th>Share of Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model.StageSummary)
+                    {
+                        var share = Model.GrandTotalAmount > 0 ? (s.TotalAmount / Model.GrandTotalAmount * 100m) : 0m;
+                        <tr>
+                            <td class="ps-3 fw-bold">
+                                <span class="badge bg-light text-dark border me-1">@s.Stage</span>
+                            </td>
+                            <td>@s.Count</td>
+                            <td class="fw-bold text-success">$@s.TotalAmount.ToString("N0")</td>
+                            <td class="fw-semibold text-warning text-dark">$@s.WeightedAmount.ToString("N0")</td>
+                            <td style="width: 250px;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="progress flex-grow-1" style="height: 8px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: @share.ToString("F0")%"></div>
+                                    </div>
+                                    <small class="text-muted" style="min-width: 45px;">@share.ToString("F1")%</small>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Section 2: Owner Distribution -->
+<div class="card shadow-sm">
+    <div class="card-header fw-bold">Executive / Owner Breakdown</div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Sales Executive</th>
+                        <th>Open Opportunities</th>
+                        <th>Total Assigned Value ($)</th>
+                        <th>Weighted Forecast ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in Model.OwnerSummary)
+                    {
+                        <tr>
+                            <td class="ps-3 fw-bold text-dark">@o.OwnerName</td>
+                            <td>@o.OpenOpportunities</td>
+                            <td class="fw-bold text-success">$@o.TotalAmount.ToString("N0")</td>
+                            <td class="fw-semibold text-warning text-dark">$@o.WeightedAmount.ToString("N0")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

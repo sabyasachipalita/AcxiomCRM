@@ -1,0 +1,112 @@
+@model AcxiomCRM.ViewModels.FollowUpFormViewModel
+@using AcxiomCRM.Services
+@inject ICurrentUserService CurrentUser
+@{
+    ViewData["Title"] = "Schedule Follow-Up";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-calendar-plus text-warning me-2"></i> Schedule Follow-Up</h2>
+        <p class="text-muted mb-0">Set reminder for upcoming sales task, call, or meeting</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Follow-Ups
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Schedule & Activity Details</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="Subject" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                            <input asp-for="Subject" class="form-control" placeholder="e.g. Discuss revised proposal terms" />
+                            <span asp-validation-for="Subject" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="FollowUpType" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                            <select asp-for="FollowUpType" class="form-select">
+                                <option value="Call">Call</option>
+                                <option value="Meeting">Meeting</option>
+                                <option value="Email">Email</option>
+                                <option value="Task">Task</option>
+                            </select>
+                            <span asp-validation-for="FollowUpType" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="Status" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Planned">Planned</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="FollowUpDate" class="form-label fw-semibold"></label> <span class="text-danger">*</span>
+                            <input asp-for="FollowUpDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="FollowUpDate" class="text-danger small"></span>
+                            <small class="text-muted">Must be today or in the future.</small>
+                        </div>
+                        @if (!CurrentUser.IsSalesExecutive && Model.OwnersList != null)
+                        {
+                            <div class="col-md-6">
+                                <label asp-for="AssignedTo" class="form-label fw-semibold"></label>
+                                <select asp-for="AssignedTo" asp-items="@Model.OwnersList" class="form-select">
+                                    <option value="">-- Assign Sales Executive --</option>
+                                </select>
+                                <span asp-validation-for="AssignedTo" class="text-danger small"></span>
+                            </div>
+                        }
+                    </div>
+
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Associated Record (Optional)</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label asp-for="CustomerId" class="form-label fw-semibold"></label>
+                            <select asp-for="CustomerId" asp-items="@Model.CustomersList" class="form-select">
+                                <option value="">-- None --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="LeadId" class="form-label fw-semibold"></label>
+                            <select asp-for="LeadId" asp-items="@Model.LeadsList" class="form-select">
+                                <option value="">-- None --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="OpportunityId" class="form-label fw-semibold"></label>
+                            <select asp-for="OpportunityId" asp-items="@Model.OpportunitiesList" class="form-select">
+                                <option value="">-- None --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Remarks" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Remarks" class="form-control" rows="3" placeholder="Context notes, discussion agenda..."></textarea>
+                        <span asp-validation-for="Remarks" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-warning text-dark px-4 fw-semibold">
+                            <i class="bi bi-calendar-check me-1"></i> Save Follow-Up
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

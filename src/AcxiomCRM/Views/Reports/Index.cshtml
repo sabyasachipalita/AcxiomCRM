@@ -1,0 +1,136 @@
+@using AcxiomCRM.Services
+@inject ICurrentUserService CurrentUser
+@{
+    ViewData["Title"] = "Reports & Analytics Hub";
+}
+
+<div class="mb-4">
+    <h2 class="fw-bold mb-1"><i class="bi bi-file-earmark-bar-graph-fill text-primary me-2"></i> Reports & Analytics</h2>
+    <p class="text-muted mb-0">Generate executive dashboards, conversion funnel diagnostics, and CSV data exports</p>
+</div>
+
+<div class="row g-4">
+    <!-- Card 1: Pipeline Breakdown Report -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-top border-primary border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+                        <i class="bi bi-bar-chart-steps fs-3"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0">Pipeline Report</h5>
+                        <small class="text-muted">Stage & Owner analysis</small>
+                    </div>
+                </div>
+                <p class="text-muted small">Analyze deals by sales stage, total opportunity amount, and probability-weighted revenues.</p>
+                <div class="d-flex gap-2 mt-auto">
+                    <a asp-action="Pipeline" class="btn btn-outline-primary btn-sm w-100">
+                        <i class="bi bi-eye me-1"></i> View Report
+                    </a>
+                    <a asp-action="ExportOpportunitiesCsv" class="btn btn-outline-success btn-sm" title="Export CSV">
+                        <i class="bi bi-download"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Conversion & Outcome Report -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-top border-success border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-success bg-opacity-10 text-success p-3 rounded-circle">
+                        <i class="bi bi-funnel-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0">Conversion Report</h5>
+                        <small class="text-muted">Lead qualification & win rate</small>
+                    </div>
+                </div>
+                <p class="text-muted small">Measure lead qualification conversion rates and overall sales opportunity win/loss outcomes.</p>
+                <div class="d-flex gap-2 mt-auto">
+                    <a asp-action="Conversion" class="btn btn-outline-success btn-sm w-100">
+                        <i class="bi bi-eye me-1"></i> View Report
+                    </a>
+                    <a asp-action="ExportLeadsCsv" class="btn btn-outline-success btn-sm" title="Export CSV">
+                        <i class="bi bi-download"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (CurrentUser.IsAdmin || CurrentUser.IsManager)
+    {
+        <!-- Card 3: User Activity Report -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-top border-info border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="bg-info bg-opacity-10 text-info p-3 rounded-circle">
+                            <i class="bi bi-person-lines-fill fs-3"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">User Activity Report</h5>
+                            <small class="text-muted">Staff workload & logs</small>
+                        </div>
+                    </div>
+                    <p class="text-muted small">Inspect interaction volume, managed opportunities, leads assigned, and follow-ups per sales rep.</p>
+                    <div class="mt-auto">
+                        <a asp-action="UserActivity" class="btn btn-outline-info text-dark btn-sm w-100">
+                            <i class="bi bi-eye me-1"></i> View Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Card 4: Customer Directory Export -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-top border-secondary border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-secondary bg-opacity-10 text-secondary p-3 rounded-circle">
+                        <i class="bi bi-people-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0">Customer Master</h5>
+                        <small class="text-muted">Full account records</small>
+                    </div>
+                </div>
+                <p class="text-muted small">Export all verified corporate customers, contacts, addresses, and assigned account executives.</p>
+                <div class="mt-auto">
+                    <a asp-action="ExportCustomersCsv" class="btn btn-outline-secondary btn-sm w-100">
+                        <i class="bi bi-download me-1"></i> Download Customer CSV
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 5: REST API Explorer -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-top border-dark border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-dark bg-opacity-10 text-dark p-3 rounded-circle">
+                        <i class="bi bi-code-slash fs-3"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0">API Data Services</h5>
+                        <small class="text-muted">OpenAPI / Swagger</small>
+                    </div>
+                </div>
+                <p class="text-muted small">Interactive documentation and endpoints for programmatic integration of CRM data and pipeline metrics.</p>
+                <div class="mt-auto">
+                    <a href="/swagger" target="_blank" class="btn btn-outline-dark btn-sm w-100">
+                        <i class="bi bi-box-arrow-up-right me-1"></i> Open Swagger UI
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
