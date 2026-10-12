@@ -237,7 +237,7 @@ Navigate to: **`http://localhost:5000`** (or the port specified in console outpu
 ```bash
 docker-compose up --build
 ```
-Navigate to: **`http://localhost:5000`**.
+Navigate to: **`http://localhost:5220`**.
 
 ---
 
